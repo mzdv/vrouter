@@ -59,3 +59,7 @@ Data manipulation
 -----------------
 Furthermore, *vrouter* contains basic data filtering logic as well as data 
 duplication, redirection and holding.
+
+License
+-------
+MIT
