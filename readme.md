@@ -16,9 +16,9 @@ manipulation abilities and routing logic.
 
 It is operating on three different ports:
 
-* 4000 - incoming traffic
-* 5000 - outgoing traffic
-* 6000 - control messages
+*   4000 - incoming traffic
+*   5000 - outgoing traffic
+*   6000 - control messages
 
 The clients that are connected to the router are in the *subnet* of the router.
 
@@ -33,11 +33,19 @@ If the data is outside the subnet, a router from the R2R table is selected
 which matches the data destination. If not, data is declared unroutable and an 
 adequate control message is being sent back.
 
+Mockup of the incoming data is the following:
+`MESSAGE|DATA|END`
+
+`MESSAGE` - the first message to the router which can be:
+*   `HELLO` - message to register in the routingTable
+*   `CONTINUE` - message to perform routing operations on the `DATA`
+*   `END` - message to delete the socket from the routing table; in this case,       the format of incoming data is only the message
+
 Outgoing traffic
 ----------------
 There are two kinds of routing tables which determine the exit of the data:
-* subnet routing table
-* router-to-router (R2R) table
+*   subnet routing table
+*   router-to-router (R2R) table
 
 Subnet routing table is a key-value pair data store which contains the addresses
 of clients in the subnet, matched with their local destination addresses.
