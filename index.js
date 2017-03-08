@@ -1,4 +1,4 @@
-import net from net;
+import net from 'net';
 
 let PORTS = {
     INCOMING: 4000,
@@ -14,11 +14,11 @@ let MESSAGES = {
 };
 
 let mutateData = function (data) {
-    return;
+    return 0;
 };
 
 let passMessage = function (data) {
-    return;
+    return 0;
 };
 
 let routingTable = {
@@ -28,7 +28,6 @@ let routingTable = {
 
 net.createServer((socket) => {
     socket.on('data', (data) => {
-
         let parsedMessage = data.split('|');
         switch (parsedMessage[0]) {
             case MESSAGES.HELLO:
