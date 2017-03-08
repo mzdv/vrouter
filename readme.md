@@ -34,9 +34,9 @@ which matches the data destination. If not, data is declared unroutable and an
 adequate control message is being sent back.
 
 Mockup of the incoming data is the following:
-`MESSAGE|DATA|END`
+`[MESSAGE]|DATA|END`
 
-`MESSAGE` - the first message to the router which can be:
+Where `[MESSAGE]` is one of the following:
 *   `HELLO` - message to register in the routingTable
 *   `CONTINUE` - message to perform routing operations on the `DATA`
 *   `END` - message to delete the socket from the routing table; in this case,       the format of incoming data is only the message
@@ -57,11 +57,24 @@ of *vrouter*.
 When the incoming traffic gets passed over to another router, the process is
 repeated if needed.
 
+Outgoing data is the same as incoming data (since router is a proxy between
+the incoming and outgoing data).
+
+
 Control messages
 ----------------
 Control messages represent commands sent directly to the router to alter its 
 state, such as regeneration of routing tables and poweroff. Furthermore, This
 channel is used to send back to the client when the messages are undeliverable.
+
+Control message data is the following:
+`[COMMAND]`
+
+Where `[COMMAND]` is one of the following:
+*   `FLUSH` - flushes all routing tables
+*   `POWEROFF` - powers off the router
+*   `DENYALL` - denies all incoming and outgoing traffic
+*   `ALLOWALL` - allows all incoming and outgoing traffic
 
 Data manipulation
 -----------------
