@@ -21,7 +21,10 @@ let passMessage = function (data) {
     return;
 };
 
-let routingTable = [];
+let routingTable = {
+    subnet: [],
+    r2r: []
+};
 
 net.createServer((socket) => {
     socket.on('data', (data) => {
