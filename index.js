@@ -97,18 +97,18 @@ net.createServer((socket) => {
 
 net.createServer((socket) => {
     socket.on('data', (data) => {
-        let splitData = data.toString().split(':');
+        let splitContent = data.toString().split(':');
 
-        if (splitData.length > 1) {
+        if (splitContent.length > 1) {
             let routePath = routingTable.subnet.filter((routingEntry) => {
-                if (routingEntry.key === splitData[0]) {
+                if (routingEntry.key === splitContent[0]) {
                     return routingEntry;
                 }
             });
 
             if (routePath.length === 0) {
                 routePath = routingTable.r2r.filter((routingEntry) => {
-                    if (routingEntry.key === splitData[0]) {
+                    if (routingEntry.key === splitContent[0]) {
                         return routingEntry;
                     }
                 });
@@ -120,7 +120,7 @@ net.createServer((socket) => {
                     port: PORTS.CONTROL,
                     host: HOST
                 }, () => {
-                    client.end('${splitContent[0]}:${mutateData(data.toString())}');
+                    client.end('${splitContent[0]}:${data.toString()}');
                 });
         }
     });
