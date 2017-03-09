@@ -1,4 +1,4 @@
-import net from 'net';
+let net = require('net');
 
 let PORTS = {
     INCOMING: 4000,
@@ -7,10 +7,21 @@ let PORTS = {
 };
 
 let LOCALHOST = '127.0.0.1';
+
 let MESSAGES = {
     HELLO: 'HELLO',
+    R2R: 'R2R',
     CONTINUE: 'CONTINUE',
     END: 'END'
+};
+
+let DATA_EMPTY = 'EMPTY';
+
+let localAddressCounter = 0;
+
+let localAddresses = {
+    subnet: 0,
+    r2r: 0
 };
 
 let mutateData = function (data) {
@@ -29,16 +40,40 @@ let routingTable = {
 net.createServer((socket) => {
     socket.on('data', (data) => {
         let parsedMessage = data.split('|');
+        let remoteAddress = socket.remoteAddress;
+
         switch (parsedMessage[0]) {
             case MESSAGES.HELLO:
-                // TODO: check if the IP exists
-                // if IP is not in the routingTable, add it
+                if (routingTable.subnet.indexOf(remoteAddress) === -1) {
+                    routingTable.subnet.push({
+                        remoteAddress: localAddresses.subnet++
+                    });
+                }
+                socket.end('Registered as ${localAddresses.subnet - 1}');
+                break;
+            case MESSAGES.R2R:
+                if (routingTable.r2r.indexOf(remoteAddress) === -1) {
+                    routingTable.r2r.push({
+                        remoteAddress: localAddresses.r2r++
+                    });
+                }
                 break;
             case MESSAGES.CONTINUE:
-                passMessage(mutateData(parsedMessage[1]));
+                // TODO: Refactor
+                // passMessage(mutateData(parsedMessage[1]));
                 break;
             case MESSAGES.END:
-                // TODO: remove IP from routingTable
+                let indices = {
+                    subnet: routingTable.subnet.indexOf(remoteAddress),
+                    r2r: routingTable.r2r.indexOf(remoteAddress)
+                }
+                if (indices.subnet > -1) {
+                    routingTable.subnet.splice(indices.subnet, 1);
+                } else if (indices.r2r > -1) {
+                    routingTable.subnet.splice(indices.r2r, 1);
+                }
+
+                socket.end('Removed from routing tables.');
                 break;
         }
     });

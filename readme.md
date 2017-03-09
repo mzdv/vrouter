@@ -34,12 +34,29 @@ which matches the data destination. If not, data is declared unroutable and an
 adequate control message is being sent back.
 
 Mockup of the incoming data is the following:
-`[MESSAGE]|DATA|END`
 
-Where `[MESSAGE]` is one of the following:
-*   `HELLO` - message to register in the routingTable
-*   `CONTINUE` - message to perform routing operations on the `DATA`
-*   `END` - message to delete the socket from the routing table; in this case,       the format of incoming data is only the message
+`MESSAGE|[DATA]`
+
+where `[MESSAGE]` is one of the following:
+*   `HELLO` - registers in the subnet table
+*   `R2R`    - message to register in the routing table
+*   `CONTINUE`  - message to perform routing operations on the `DATA`
+*   `END`   - deletes the socket from the routing table
+
+Note that only `CONTINUE` accepts data. Commands without `DATA` must terminate
+with `|`.
+
+`DATA` can be one of the following:
+*   `DEST:DATA` - where:
+    *   `DEST` - destination IP
+    *   `DATA` - raw data that will be parsed (if required) and routed
+*   `EMPTY` - doesn't do anything; just a placeholder for padding
+
+Several examples of incoming data are below:
+*   `R2R|`  - registers the client as a router
+*   `HELLO|EMPTY`   - registers the client as a member of the subnet
+*   `CONTINUE|192.168.1.1:GOODMORNING`  - sends `GOODMORNING` to 192.168.1.1
+*   `END|`   - deletes the entry in the routing table
 
 Outgoing traffic
 ----------------
