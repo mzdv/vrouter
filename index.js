@@ -6,7 +6,7 @@ let PORTS = {
     CONTROL: 6000
 };
 
-let LOCALHOST = '127.0.0.1';
+let HOST = '127.0.0.1';
 
 let MESSAGES = {
     HELLO: 'HELLO',
@@ -25,7 +25,13 @@ let localAddresses = {
 };
 
 let mutateData = function (data) {
-    return 0;
+    return data + 'mutated';
+    /* This is an example of data mutation
+       in real life, this would be a rule engine
+        that would manipulate data to an input
+        provided by the network administrator.
+        To keep it simple, this just adds the
+        '_mutated' string to it. */
 };
 
 let passMessage = function (data) {
@@ -59,8 +65,18 @@ net.createServer((socket) => {
                 }
                 break;
             case MESSAGES.CONTINUE:
-                // TODO: Refactor
-                // passMessage(mutateData(parsedMessage[1]));
+                let splitContent = parsedMessage[1].split(':');
+                if (splitContent.length > 1) {
+                    let client = net.connect(
+                        {
+                            port: PORTS.OUTGOING,
+                            host: HOST
+                        }, () => {
+                            client.end('${splitContent[0]}:${mutateData(data.toString())}');
+                        });
+                } else if (parsedMessage[1] === 'EMPTY') {
+                    socket.write('Got EMPTY, ignoring...');
+                }
                 break;
             case MESSAGES.END:
                 let indices = {
@@ -77,16 +93,25 @@ net.createServer((socket) => {
                 break;
         }
     });
-}).listen(PORTS.INCOMING, LOCALHOST);
+}).listen(PORTS.INCOMING, HOST);
+
+net.createServer((socket) => {
+    socket.on('data', (data) => {
+        let splitData = data.toString().split(':');
+
+        if (splitData.length > 1) {
+            // TODO: Check if it exists in the routing table,
+            // If not, trash it.
+        } else {
+            socket.end('No route found.');
+            // TODO: Create client to the control port
+        }
+    });
+}).listen(PORTS.OUTGOING, HOST);
 
 net.createServer((socket) => {
     socket.on('data', (data) => {
         // Not implemented
+        // TODO: Trigger the original sender with the 'ENORT' message
     });
-}).listen(PORTS.OUTGOING, LOCALHOST);
-
-net.createServer((socket) => {
-    socket.on('data', (data) => {
-        // Not implemented
-    });
-}).listen(PORTS.CONTROL, LOCALHOST);
+}).listen(PORTS.CONTROL, HOST);
