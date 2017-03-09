@@ -100,11 +100,28 @@ net.createServer((socket) => {
         let splitData = data.toString().split(':');
 
         if (splitData.length > 1) {
-            // TODO: Check if it exists in the routing table,
-            // If not, trash it.
+            let routePath = routingTable.subnet.filter((routingEntry) => {
+                if (routingEntry.key === splitData[0]) {
+                    return routingEntry;
+                }
+            });
+
+            if (routePath.length === 0) {
+                routePath = routingTable.r2r.filter((routingEntry) => {
+                    if (routingEntry.key === splitData[0]) {
+                        return routingEntry;
+                    }
+                });
+            }
         } else {
             socket.end('No route found.');
-            // TODO: Create client to the control port
+            let client = net.connect(
+                {
+                    port: PORTS.CONTROL,
+                    host: HOST
+                }, () => {
+                    client.end('${splitContent[0]}:${mutateData(data.toString())}');
+                });
         }
     });
 }).listen(PORTS.OUTGOING, HOST);
