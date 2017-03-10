@@ -72,7 +72,7 @@ net.createServer((socket) => {
                             port: PORTS.OUTGOING,
                             host: HOST
                         }, () => {
-                            client.end('${splitContent[0]}:${mutateData(data.toString())}');
+                            client.end('${socket.remoteAddress}/${splitContent[0]}:${mutateData(data.toString())}');
                         });
                 } else if (parsedMessage[1] === 'EMPTY') {
                     socket.write('Got EMPTY, ignoring...');
@@ -97,7 +97,8 @@ net.createServer((socket) => {
 
 net.createServer((socket) => {
     socket.on('data', (data) => {
-        let splitContent = data.toString().split(':');
+        let configuration = data.toString().split('/')[0];
+        let splitContent = configuration[1].split(':');
 
         if (splitContent.length > 1) {
             let routePath = routingTable.subnet.filter((routingEntry) => {
@@ -120,7 +121,7 @@ net.createServer((socket) => {
                     port: PORTS.CONTROL,
                     host: HOST
                 }, () => {
-                    client.end('${splitContent[0]}:${data.toString()}');
+                    client.end('${configuration[0]}/${splitContent[0]}:${data.toString()}');
                 });
         }
     });
@@ -128,7 +129,14 @@ net.createServer((socket) => {
 
 net.createServer((socket) => {
     socket.on('data', (data) => {
-        // Not implemented
-        // TODO: Trigger the original sender with the 'ENORT' message
+        let failedData = data.toString().split('/');
+
+        let client = net.connect(
+            {
+                port: PORTS.CONTROL,
+                host: failedData[0]
+            }, () => {
+                client.end('ENORT:${failedData[0]}:${failedData[1]}');
+            });
     });
 }).listen(PORTS.CONTROL, HOST);
