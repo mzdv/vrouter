@@ -95,8 +95,8 @@ Where `[COMMAND]` is one of the following:
 
 Data manipulation
 -----------------
-Furthermore, *vrouter* contains basic data filtering logic as well as data 
-duplication, redirection and holding.
+Furthermore, *vrouter* contains entry points for data filtering logic as well as duplication, redirection and holding, all extendible in the
+`mutateData(data)` function.
 
 License
 -------

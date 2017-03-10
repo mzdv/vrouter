@@ -29,13 +29,10 @@ let mutateData = function (data) {
     /* This is an example of data mutation
        in real life, this would be a rule engine
         that would manipulate data to an input
-        provided by the network administrator.
-        To keep it simple, this just adds the
-        '_mutated' string to it. */
-};
-
-let passMessage = function (data) {
-    return 0;
+        provided by the network administrator,
+        such as data duplication, redirection
+        and holding of data. To keep it simple,
+        this just adds the '_mutated' string to it. */
 };
 
 let routingTable = {
